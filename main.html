@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Calculadora de Materiais</title>
+    <!-- Tailwind CSS para um design moderno e responsivo -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Fonte do Google para uma melhor legibilidade -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        /* Estilo para a aba ativa */
+        .tab-button.active {
+            background-color: #3b82f6; /* bg-blue-600 */
+            color: white;
+        }
+        /* Esconde os painéis das abas por padrão */
+        .tab-panel {
+            display: none;
+        }
+        /* Mostra o painel da aba ativa */
+        .tab-panel.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen flex items-center justify-center p-4">
+
+    <div class="w-full max-w-2xl bg-white rounded-xl shadow-lg p-6">
+        <h1 class="text-2xl font-bold text-gray-800 text-center mb-6">Calculadora de Materiais</h1>
+
+        <!-- Controles das Abas -->
+        <div class="flex border-b border-gray-200 mb-6">
+            <button class="tab-button active flex-1 py-3 px-4 text-center font-semibold text-gray-600 hover:bg-gray-100 transition-colors duration-200 rounded-t-lg" onclick="switchTab('compras')">Compras</button>
+            <button class="tab-button flex-1 py-3 px-4 text-center font-semibold text-gray-600 hover:bg-gray-100 transition-colors duration-200 rounded-t-lg" onclick="switchTab('vendas')">Vendas</button>
+            <button class="tab-button flex-1 py-3 px-4 text-center font-semibold text-gray-600 hover:bg-gray-100 transition-colors duration-200 rounded-t-lg" onclick="switchTab('padrao')">Material Padrão</button>
+        </div>
+
+        <!-- Conteúdo das Abas -->
+        <div>
+            <!-- Aba de Compras -->
+            <div id="compras-panel" class="tab-panel active space-y-4">
+                <div class="grid md:grid-cols-2 gap-4">
+                    <!-- Coluna de Inputs -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="material-compras" class="block text-sm font-medium text-gray-700">Tipo de Material</label>
+                            <select id="material-compras" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option>Aço Carbono</option>
+                                <option>Aço Inox</option>
+                                <option>Alumínio</option>
+                                <option>Bronze TM 23</option>
+                                <option>Nodular</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="geometria-compras" class="block text-sm font-medium text-gray-700">Geometria do Material</label>
+                            <select id="geometria-compras" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option>Redondo</option>
+                                <option>Quadrado</option>
+                                <option>Chato</option>
+                                <option>Sextavado</option>
+                                <option>Tubo Redondo</option>
+                                <option>Tubo Quadrado</option>
+                                <option>Cantoneira</option>
+                            </select>
+                        </div>
+                        <!-- Campos de Medidas Dinâmicos -->
+                        <div id="medidas-compras" class="space-y-4"></div>
+                        <div>
+                            <label for="comprimento-compras" class="block text-sm font-medium text-gray-700">Comprimento (m)</label>
+                            <input type="text" id="comprimento-compras" placeholder="Ex: 1,5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <button id="calcular-compras" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200">Calcular Peso</button>
+                    </div>
+                    <!-- Coluna de Resultados e Conversor -->
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-gray-800">Resultado</h3>
+                            <p id="resultado-compras" class="text-2xl font-bold text-blue-600 mt-2">Peso: 0.00 kg</p>
+                            <p id="erro-compras" class="text-red-500 text-sm mt-1 h-4"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+                            <h3 class="text-md font-semibold text-gray-700 text-center">Conversor Polegadas para MM</h3>
+                             <div>
+                                <label for="polegadas-compras" class="block text-sm font-medium text-gray-700">Polegadas (ex: 1.1/2)</label>
+                                <input type="text" id="polegadas-compras" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <button id="converter-compras" class="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">Converter</button>
+                            <p id="resultado-conversor-compras" class="text-center font-semibold text-gray-800">Resultado: 0.00 mm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba de Vendas -->
+            <div id="vendas-panel" class="tab-panel space-y-4">
+                 <div class="grid md:grid-cols-2 gap-4">
+                    <!-- Coluna de Inputs -->
+                    <div class="space-y-4">
+                        <div>
+                            <label for="material-vendas" class="block text-sm font-medium text-gray-700">Tipo de Material</label>
+                            <select id="material-vendas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option>Aço Carbono</option>
+                                <option>Aço Inox</option>
+                                <option>Alumínio</option>
+                                <option>Bronze TM 23</option>
+                                <option>Nodular</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="geometria-vendas" class="block text-sm font-medium text-gray-700">Geometria do Material</label>
+                            <select id="geometria-vendas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                                <option>Redondo</option>
+                                <option>Quadrado</option>
+                                <option>Chato</option>
+                                <option>Sextavado</option>
+                                <option>Tubo Redondo</option>
+                                <option>Tubo Quadrado</option>
+                                <option>Cantoneira</option>
+                            </select>
+                        </div>
+                        <!-- Campos de Medidas Dinâmicos -->
+                        <div id="medidas-vendas" class="space-y-4"></div>
+                        <div>
+                            <label for="comprimento-vendas" class="block text-sm font-medium text-gray-700">Comprimento (m)</label>
+                            <input type="text" id="comprimento-vendas" placeholder="Ex: 1,5" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                         <div>
+                            <label for="valor-unitario" class="block text-sm font-medium text-gray-700">Valor Unitário (R$/kg)</label>
+                            <input type="text" id="valor-unitario" placeholder="Ex: 25,50" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                         <div>
+                            <label for="margem" class="block text-sm font-medium text-gray-700">Margem (fator)</label>
+                            <input type="text" id="margem" placeholder="Ex: 1.2 para 20%" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        </div>
+                        <button id="calcular-vendas" class="w-full bg-blue-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-700 transition-colors duration-200">Calcular Valor</button>
+                    </div>
+                    <!-- Coluna de Resultados e Conversor -->
+                    <div class="space-y-4">
+                        <div class="bg-gray-50 p-4 rounded-lg text-center">
+                            <h3 class="text-lg font-semibold text-gray-800">Resultado</h3>
+                            <p id="resultado-peso-vendas" class="text-xl font-bold text-blue-600 mt-2">Peso Total: 0.00 kg</p>
+                             <p id="resultado-valor-vendas" class="text-xl font-bold text-green-600 mt-1">Valor Total: R$ 0.00</p>
+                            <p id="erro-vendas" class="text-red-500 text-sm mt-1 h-4"></p>
+                        </div>
+                        <div class="bg-gray-50 p-4 rounded-lg space-y-3">
+                            <h3 class="text-md font-semibold text-gray-700 text-center">Conversor Polegadas para MM</h3>
+                             <div>
+                                <label for="polegadas-vendas" class="block text-sm font-medium text-gray-700">Polegadas (ex: 1.1/2)</label>
+                                <input type="text" id="polegadas-vendas" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                            </div>
+                            <button id="converter-vendas" class="w-full bg-gray-600 text-white font-bold py-2 px-4 rounded-lg hover:bg-gray-700 transition-colors">Converter</button>
+                            <p id="resultado-conversor-vendas" class="text-center font-semibold text-gray-800">Resultado: 0.00 mm</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Aba Material Padrão -->
+            <div id="padrao-panel" class="tab-panel">
+                <div>
+                    <label for="material-padrao" class="block text-sm font-medium text-gray-700">Selecione o Tipo de Material</label>
+                    <select id="material-padrao" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                        <option>Cromado</option>
+                        <option>Tubos</option>
+                        <option>Aços</option>
+                        <option>Nodulares</option>
+                    </select>
+                </div>
+                <div class="mt-4 border border-gray-200 rounded-lg p-4 h-96 overflow-y-auto bg-gray-50">
+                    <pre id="lista-materiais" class="whitespace-pre-wrap text-sm text-gray-800"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- CONFIGURAÇÕES E DADOS ---
+        const densidades = {
+            "Aço Carbono": 7.85,
+            "Aço Inox": 7.93,
+            "Alumínio": 2.70,
+            "Bronze TM 23": 8.70,
+            "Nodular": 7.20
+        };
+
+        const materiaisPadrao = {
+            "Cromado": {
+                prefixo: "Aço 1045 cromado Ø",
+                sufixo: "mm",
+                medidas: [12.70, 15.87, 16, 19.05, 20, 22, 25.40, 30.16, 31.75, 35, 38.10, 44.45, 49.20, 50.80, 57.15, 63.50, 70, 76.20, 88.90]
+            },
+            "Tubos": {
+                items: [
+                    ...["38,10 x 46,5", "50 x 60", "50,80 x 60,40", "50,80 x 63", "57,15 x 68", "63,50 x 76,20", "76,20 x 88,90", "80 x 92", "82,55 x 95,25", "88,90 x 101,6", "101,6 x 114,3", "101,6 x 118", "114 x 127", "127 x 145"].map(m => `Tubo trefilado Ø ${m} mm`),
+                    ...["25,40 x 33,40", "32 x 40", "40 x 50"].map(m => `Tubo calibrado Ø ${m} mm`)
+                ]
+            },
+            "Aços": {
+                items: [
+                    ...[12.70, 14.29, 15.87, 19.05, 22.23, 25.40, 28.58, 31.75, 34.92, 36.51, 38.10, 41.27, 42.86, 44.45, 47.62, 50.80, 53.97, 57.15, 60.32, 63.50, 66.67, 69.85, 73.03, 79.38, 82.55, 85.73, 88.90, 95.25, 101.6, 107.95].map(m => `Aço sae 1045 Ø ${m.toFixed(2)} mm`),
+                    ...[76.20].map(m => `Aço sae 1020 Ø ${m.toFixed(2)} mm`)
+                ]
+            },
+            "Nodulares": {
+                prefixo: "Ferro nodular Ø",
+                sufixo: "mm",
+                medidas: [30.7, 33.9, 37.1, 40.3, 43.4, 46.6, 49.8, 53, 56.8, 59.9, 63.1, 66.3, 72.6, 75.8, 79, 82.6, 85.7, 88.9, 92.1, 98.4, 101.6, 104.8, 111.5, 117.9, 124.2, 130.6, 137.3, 143.6]
+            }
+        };
+
+        // --- FUNÇÕES UTILITÁRIAS ---
+        function get(id) {
+            return document.getElementById(id);
+        }
+
+        function converterParaPonto(valor) {
+            return valor.toString().replace(',', '.');
+        }
+        
+        // --- LÓGICA DAS ABAS ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+            document.querySelectorAll('.tab-button').forEach(button => button.classList.remove('active'));
+
+            get(`${tabId}-panel`).classList.add('active');
+            document.querySelector(`button[onclick="switchTab('${tabId}')"]`).classList.add('active');
+        }
+
+        // --- ATUALIZAÇÃO DA INTERFACE ---
+        function criarInput(labelText, inputId) {
+            return `
+                <div>
+                    <label for="${inputId}" class="block text-sm font-medium text-gray-700">${labelText}</label>
+                    <input type="text" id="${inputId}" placeholder="0,0" class="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                </div>
+            `;
+        }
+
+        function atualizarMedidas(tipo) { // tipo = 'compras' ou 'vendas'
+            const geometria = get(`geometria-${tipo}`).value;
+            const container = get(`medidas-${tipo}`);
+            let html = '';
+
+            switch (geometria) {
+                case 'Redondo':
+                    html = criarInput('Diâmetro (mm)', `diametro-${tipo}`);
+                    break;
+                case 'Quadrado':
+                    html = criarInput('Lado (mm)', `lado-${tipo}`);
+                    break;
+                case 'Sextavado':
+                    html = criarInput('Altura (mm)', `altura-${tipo}`);
+                    break;
+                case 'Chato':
+                    html = criarInput('Largura (mm)', `largura-${tipo}`) + criarInput('Espessura (mm)', `espessura-${tipo}`);
+                    break;
+                case 'Tubo Redondo':
+                    html = criarInput('Diâmetro Externo (mm)', `diametro_externo-${tipo}`) + criarInput('Diâmetro Interno (mm)', `diametro_interno-${tipo}`);
+                    break;
+                case 'Tubo Quadrado':
+                    html = criarInput('Lado (mm)', `lado-${tipo}`) + criarInput('Espessura (mm)', `espessura-${tipo}`);
+                    break;
+                case 'Cantoneira':
+                     html = criarInput('Largura (mm)', `largura-${tipo}`) + criarInput('Espessura (mm)', `espessura-${tipo}`);
+                    break;
+            }
+            container.innerHTML = html;
+        }
+        
+        function atualizarListaMaterialPadrao() {
+            const tipo = get('material-padrao').value;
+            const data = materiaisPadrao[tipo];
+            const lista = get('lista-materiais');
+            
+            if (data.items) {
+                 lista.textContent = data.items.join('\n');
+            } else {
+                 lista.textContent = data.medidas.map(m => `${data.prefixo} ${m.toFixed(2)} ${data.sufixo}`).join('\n');
+            }
+        }
+
+        // --- LÓGICA DE CÁLCULO ---
+        function calcularArea(tipo) {
+            const geometria = get(`geometria-${tipo}`).value;
+            const p = (id) => parseFloat(converterParaPonto(get(`${id}-${tipo}`).value));
+
+            switch (geometria) {
+                case 'Redondo':
+                    const d = p('diametro');
+                    return Math.PI * (d / 2) ** 2;
+                case 'Quadrado':
+                    const l = p('lado');
+                    return l * l;
+                case 'Chato':
+                    return p('largura') * p('espessura');
+                case 'Sextavado':
+                     const h = p('altura');
+                     // A fórmula da área de um hexágono regular é (3 * sqrt(3) / 2) * lado^2.
+                     // A 'altura' aqui é a distância entre faces opostas, que é 2 * apótema ou sqrt(3) * lado.
+                     // Portanto, lado = altura / sqrt(3).
+                     const ladoSext = h / Math.sqrt(3);
+                     return (3 * Math.sqrt(3) / 2) * ladoSext ** 2;
+                case 'Tubo Redondo':
+                    const dExt = p('diametro_externo');
+                    const dInt = p('diametro_interno');
+                    return Math.PI * ((dExt / 2) ** 2 - (dInt / 2) ** 2);
+                case 'Tubo Quadrado':
+                    const ladoTubo = p('lado');
+                    const espTubo = p('espessura');
+                    return (ladoTubo ** 2) - ((ladoTubo - 2 * espTubo) ** 2);
+                case 'Cantoneira':
+                    const largCant = p('largura');
+                    const espCant = p('espessura');
+                    return (largCant * espCant) * 2 - (espCant * espCant); // Área de dois retângulos menos a sobreposição
+            }
+            throw new Error("Geometria desconhecida");
+        }
+        
+        function calcular(tipo) {
+            const erroEl = get(`erro-${tipo}`);
+            erroEl.textContent = '';
+            try {
+                const material = get(`material-${tipo}`).value;
+                const comprimento = parseFloat(converterParaPonto(get(`comprimento-${tipo}`).value));
+
+                if (isNaN(comprimento) || comprimento <= 0) throw new Error("Comprimento inválido.");
+                
+                const area = calcularArea(tipo);
+                if (isNaN(area) || area <= 0) throw new Error("Medidas inválidas.");
+                
+                const volume_dm3 = (area * (comprimento * 1000)) / 1000000;
+                const peso = volume_dm3 * densidades[material];
+
+                if (tipo === 'compras') {
+                    get('resultado-compras').textContent = `Peso: ${peso.toFixed(2)} kg`;
+                } else { // vendas
+                    const valorUnitario = parseFloat(converterParaPonto(get('valor-unitario').value));
+                    const margem = parseFloat(converterParaPonto(get('margem').value));
+                    if (isNaN(valorUnitario) || valorUnitario <= 0) throw new Error("Valor unitário inválido.");
+                    if (isNaN(margem) || margem <= 0) throw new Error("Margem inválida.");
+                    
+                    const valorTotal = peso * valorUnitario * margem;
+                    
+                    get('resultado-peso-vendas').textContent = `Peso Total: ${peso.toFixed(2)} kg`;
+                    get('resultado-valor-vendas').textContent = `Valor Total: R$ ${valorTotal.toFixed(2)}`;
+                }
+
+            } catch (e) {
+                erroEl.textContent = `Erro: ${e.message}`;
+                // Limpa resultados em caso de erro
+                 if (tipo === 'compras') {
+                    get('resultado-compras').textContent = 'Peso: 0.00 kg';
+                } else {
+                     get('resultado-peso-vendas').textContent = 'Peso Total: 0.00 kg';
+                     get('resultado-valor-vendas').textContent = 'Valor Total: R$ 0.00';
+                }
+            }
+        }
+        
+        function converterPolegadas(tipo) {
+            try {
+                 const input = get(`polegadas-${tipo}`).value.trim();
+                 if (!input) throw new Error("Entrada vazia");
+
+                 let polegadas = 0;
+                 if (input.includes('.')) {
+                     const [inteiroStr, fracaoStr] = input.split('.');
+                     polegadas += parseInt(inteiroStr, 10);
+                     if (fracaoStr.includes('/')) {
+                         const [numerador, denominador] = fracaoStr.split('/').map(Number);
+                         if (denominador === 0) throw new Error("Divisão por zero");
+                         polegadas += numerador / denominador;
+                     } else {
+                         throw new Error("Formato de fração inválido");
+                     }
+                 } else if (input.includes('/')) {
+                      const [numerador, denominador] = input.split('/').map(Number);
+                      if (denominador === 0) throw new Error("Divisão por zero");
+                      polegadas += numerador / denominador;
+                 } else {
+                     polegadas = parseFloat(converterParaPonto(input));
+                 }
+                
+                if (isNaN(polegadas)) throw new Error("Valor numérico inválido");
+
+                 const mm = polegadas * 25.4;
+                 get(`resultado-conversor-${tipo}`).textContent = `Resultado: ${mm.toFixed(2)} mm`;
+
+            } catch (e) {
+                 get(`resultado-conversor-${tipo}`).textContent = `Erro!`;
+            }
+        }
+
+
+        // --- EVENT LISTENERS (OUVINTES DE EVENTOS) ---
+        window.addEventListener('DOMContentLoaded', () => {
+            // Inicialização
+            atualizarMedidas('compras');
+            atualizarMedidas('vendas');
+            atualizarListaMaterialPadrao();
+
+            // Aba Compras
+            get('geometria-compras').addEventListener('change', () => atualizarMedidas('compras'));
+            get('calcular-compras').addEventListener('click', () => calcular('compras'));
+            get('converter-compras').addEventListener('click', () => converterPolegadas('compras'));
+
+            // Aba Vendas
+            get('geometria-vendas').addEventListener('change', () => atualizarMedidas('vendas'));
+            get('calcular-vendas').addEventListener('click', () => calcular('vendas'));
+            get('converter-vendas').addEventListener('click', () => converterPolegadas('vendas'));
+            
+            // Aba Padrão
+            get('material-padrao').addEventListener('change', atualizarListaMaterialPadrao);
+        });
+
+    </script>
+</body>
+</html>
